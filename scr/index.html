@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <input type="text" class="search" placeholder="Search pianist">
+  </div>
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+      
+      var pianistsListContent = [];
+
+      console.log('pianistsListContent: ', pianistsListContent);
+
+      $('.search').on('keyup', function(e) {
+        if (e.target.value.length > 2) {
+
+          console.log('pianistsListContent: ', pianistsListContent);
+        }
+        
+      });
+
+      function parseData(data) {
+      }
+
+      $.ajax({
+        type: "GET",
+        url: "http://en.wikipedia.org/w/api.php?format=json&action=query&titles=List_of_classical_pianists&prop=revisions&rvprop=content&callback=?",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+          var pageContent = data.query.pages['2377133'].revisions[0]['*'];
+          //see pattern here
+          var parsedContent = pageContent.replace(new RegExp(/[[\]]|{{div col end}}|{{div col\|cols=3}}|==+[A-Z].*|==+[A-Z].*|\u21b5/, 'g'), '');
+
+          var pianistsArray = parsedContent.split('*')
+
+          console.log(pianistsArray);
+          pianistsListContent.push(pianistsArray);
+        },
+        error: function (errorMessage) {
+          console.warn('Error accesing wikipedia API');
+        }
+      });
+    });
+
+
+  </script>
+</body>
+</html>

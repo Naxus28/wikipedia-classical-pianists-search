@@ -1,0 +1,26 @@
+{
+  "name": "wikipedia-classical-pianists-search",
+  "version": "1.0.0",
+  "description": "A simple tool that searches for classical pianists using the Wikipedia API",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naxus28/wikipedia-classical-pianists-search.git"
+  },
+  "keywords": [
+    "classical",
+    "pianists"
+  ],
+  "author": "Gabriel Ferraz <gabrielferraz27@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Naxus28/wikipedia-classical-pianists-search/issues"
+  },
+  "homepage": "https://github.com/Naxus28/wikipedia-classical-pianists-search#readme",
+  "dependencies": {
+    "jquery": "^3.1.1"
+  }
+}
