@@ -51,10 +51,25 @@
       var pianistsArray = [];
 
       $('.search').on('keyup', function(e) {
-        if (e.target.value.length > 2) {
+        if (e.target.value.length) {
+          var pianists = '';
+          
+          $.each(pianistsArray, function(index, pianist) {
+            var pianistToLower = pianist.toLowerCase();
 
-          // var pianist = _.find(pianistsArray);
-       
+            if (pianistToLower.includes(e.target.value)) {
+              pianists += '<span class="pianist_container" style="background:beige">' + pianist + '</span>'; 
+            }
+          });
+
+          $('.pianists-wrapper').html(pianists);
+
+          $('.pianist_container').on('click', function() {
+            var pianistName = $(this).text();
+            var pianistNameForQuery = pianistName.trim().split(' ').join('_');
+            callPianistAPI(pianistNameForQuery);
+          });
+
         }
       });
       function getRandomInt(min, max) {
@@ -75,6 +90,32 @@
         return arrayOfPianists;
       }
 
+      function callPianistAPI(pianistNameForQuery) {
+        // query api for that pianist page
+        $.ajax({
+          type: "GET",
+          url: "http://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="+pianistNameForQuery+"&callback=?",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          success: function (data, textStatus, jqXHR) {
+            var pages = data.query.pages;
+            var pianistText,
+                pianistName;
+
+            $.each(pages, function(index, data) {
+              pianistText = data.extract;
+              pianistName = data.title;
+            });
+
+            $('.pianist-text').text(pianistText);
+            $('.pianist-name').text(pianistName);
+          },
+          error: function (errorMessage) {
+            console.warn('Error accesing wikipedia API');
+          }
+        });
+      }
+
       function renderPianistsOnScreen(pianistsArray) {
         for (i=0; i < pianistsArray.length; i++) {
           var red = getRandomInt(80, 200);
@@ -89,34 +130,7 @@
          $('.pianist_container').on('click', function() {
             var pianistName = $(this).text();
             var pianistNameForQuery = pianistName.trim().split(' ').join('_');
-            var pianistText = $('.pianist-text');
-            var pianistName = $('.pianist-name');
-
-            pianistText.text('');
-            pianistName.text('');
-
-            // query api for that pianist page
-            $.ajax({
-              type: "GET",
-              url: "http://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="+pianistNameForQuery+"&callback=?",
-              contentType: "application/json; charset=utf-8",
-              dataType: "json",
-              success: function (data, textStatus, jqXHR) {
-                console.log(data);
-                var pages = data.query.pages;
-                var pianistText,
-                    pianistName;
-                $.each(pages, function(index, data) {
-                  pianistText = data.extract;
-                  pianistName = data.title;
-                });
-                $('.pianist-text').prepend(pianistText);
-                $('.pianist-name').prepend(pianistName);
-              },
-              error: function (errorMessage) {
-                console.warn('Error accesing wikipedia API');
-              }
-            });
+            callPianistAPI(pianistNameForQuery);
            });
       }
 
