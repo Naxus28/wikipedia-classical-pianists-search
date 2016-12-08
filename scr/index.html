@@ -47,33 +47,36 @@
   <script type="text/javascript">
     $(document).ready(function(){
 
+      callPianistsAPI();
+
       // var to hold wikipedia content from API
       var pianistsArray = [];
 
       $('.search').on('keyup', function(e) {
         if (e.target.value.length) {
-          var pianists = '';
-          
-          $.each(pianistsArray, function(index, pianist) {
+          var matchedPianists = _.filter(pianistsArray, function(pianist) {
             var pianistToLower = pianist.toLowerCase();
-
             if (pianistToLower.includes(e.target.value)) {
-              pianists += '<span class="pianist_container" style="background:beige">' + pianist + '</span>'; 
+              return pianist;
             }
-          });
+        });
 
-          $('.pianists-wrapper').html(pianists);
+          renderPianistsOnScreen(matchedPianists)
 
+          // add listener
           $('.pianist_container').on('click', function() {
-            var pianistName = $(this).text();
-            var pianistNameForQuery = pianistName.trim().split(' ').join('_');
-            callPianistAPI(pianistNameForQuery);
+            formatPianistNameAndCallApi($(this));
           });
-
         }
       });
       function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function formatPianistNameAndCallApi(jQueryPianistContainer) {
+        var pianistName = jQueryPianistContainer.text();
+        var pianistNameForQuery = pianistName.trim().split(' ').join('_');
+        callPianistAPI(pianistNameForQuery);
       }
 
       function parseRawWikipediaContent(rawStringContent) {
@@ -116,41 +119,43 @@
         });
       }
 
+      function callPianistsAPI() {
+        // query api for pianists list
+        $.ajax({
+          type: "GET",
+          url: "http://en.wikipedia.org/w/api.php?format=json&action=query&titles=List_of_classical_pianists&prop=revisions&rvprop=content&callback=?",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          success: function (data, textStatus, jqXHR) {
+            var rawStringContent = data.query.pages['2377133'].revisions[0]['*'];
+            var parsedStringContent = parseRawWikipediaContent(rawStringContent);          
+            pianistsArray = makePianistsArrayAndSort(parsedStringContent);
+            renderPianistsOnScreen(pianistsArray);
+          },
+          error: function (errorMessage) {
+            console.warn('Error accesing wikipedia API');
+          }
+        });
+      }
+
       function renderPianistsOnScreen(pianistsArray) {
-        for (i=0; i < pianistsArray.length; i++) {
+        var pianists = '';
+
+        $.each(pianistsArray, function(index, pianist) {
           var red = getRandomInt(80, 200);
           var green = getRandomInt(80, 200);
           var blue = getRandomInt(80, 200);
-
           var background = 'rgb('+ red + ',' + green + ',' + blue + ')';
+          pianists += '<span class="pianist_container" style="background:' + background + '">' + pianist + '</span>';
+        });
+        
+        $('.pianists-wrapper').html(pianists);
 
-           $('.pianists-wrapper').append('<span class="pianist_container" style="background:' + background + '">' + pianistsArray[i] + '</span>');
-        }
-
-         $('.pianist_container').on('click', function() {
-            var pianistName = $(this).text();
-            var pianistNameForQuery = pianistName.trim().split(' ').join('_');
-            callPianistAPI(pianistNameForQuery);
-           });
+        // add listener
+        $('.pianist_container').on('click', function() {
+          formatPianistNameAndCallApi($(this));
+        });
       }
-
-      // query api for pianists list
-      $.ajax({
-        type: "GET",
-        url: "http://en.wikipedia.org/w/api.php?format=json&action=query&titles=List_of_classical_pianists&prop=revisions&rvprop=content&callback=?",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (data, textStatus, jqXHR) {
-          var rawStringContent = data.query.pages['2377133'].revisions[0]['*'];
-          var parsedStringContent = parseRawWikipediaContent(rawStringContent);          
-          pianistsArray = makePianistsArrayAndSort(parsedStringContent);
-          renderPianistsOnScreen(pianistsArray);
-          
-        },
-        error: function (errorMessage) {
-          console.warn('Error accesing wikipedia API');
-        }
-      });
     });
   </script>
 </body>
