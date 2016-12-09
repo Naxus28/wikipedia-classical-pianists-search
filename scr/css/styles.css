@@ -1,0 +1,22 @@
+.pianist_container{
+  padding:50px;
+  width: 25%; 
+  box-sizing:border-box; 
+  display:inline-block; 
+  text-align: center;
+  cursor: pointer;
+  transition: all .5s ease;
+  border: 1px solid rgba(50,50,50, .5);
+  opacity: 0.85;
+}
+.pianist_container:hover{
+  opacity: 1;
+}
+.pianist-wrapper{
+  padding: 15px;
+  line-height: 25px;
+}
+.pianist-name{
+  text-align: center;
+  margin-bottom: 20px;
+}
