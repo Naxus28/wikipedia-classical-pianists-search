@@ -1,44 +1,44 @@
-$(document).ready(function(){
+$(document).ready(() => {
+  const regexForPianistsPage = /[[\]]|\u21b5|{{div col end}}|{{div col\|cols=3}}|:fr:Jean-Marc Savelli|Jean-Marc Savelli|==+[A-Z].*|==+[A-Z].*|\|.*|Wojciech Żywny|{{DEFAULTSORT:Classical Pianists}}|Category:Lists of musicians by instrument|Category:Classical pianists|Category:Classical music lists|\(.*/;
+  callPianistsListApi();
 
-  callPianistsAPI();
+  // let to hold wikipedia content from API
+  let pianistsArray = [];
 
-  // var to hold wikipedia content from API
-  var pianistsArray = [];
-
-  $('.search').on('keyup', function(e) {
+  $('.search').on('keyup', (e) => {
     if (e.target.value.length) {
-      var matchedPianists = _.filter(pianistsArray, function(pianist) {
-        var pianistToLower = pianist.toLowerCase();
+      let matchedPianists = _.filter(pianistsArray, (pianist) => {
+        let pianistToLower = pianist.toLowerCase();
         if (pianistToLower.includes(e.target.value)) {
           return pianist;
         }
-    });
+      });
 
-      renderPianistsOnScreen(matchedPianists)
+      renderPianists(matchedPianists)
 
       // add listener
-      $('.pianist_container').on('click', function() {
-        formatPianistNameAndCallApi($(this));
-      });
+      // when using '=>' $(this) is bound to window, not to element that has the event
+      $('.pianist_container').on('click', () => formatPianistNameAndCallApi(($(event.currentTarget))));
     }
   });
+
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   function formatPianistNameAndCallApi(jQueryPianistContainer) {
-    var pianistName = jQueryPianistContainer.text();
-    var pianistNameForQuery = pianistName.trim().split(' ').join('_');
+    let pianistName = jQueryPianistContainer.text();
+    let pianistNameForQuery = pianistName.trim().split(' ').join('_');
     callPianistAPI(pianistNameForQuery);
   }
 
   function parseRawWikipediaContent(rawStringContent) {
     // see pattern here: http://regexr.com/3er2s
-    return rawStringContent.replace(new RegExp(/[[\]]|\u21b5|{{div col end}}|{{div col\|cols=3}}|:fr:Jean-Marc Savelli|Jean-Marc Savelli|==+[A-Z].*|==+[A-Z].*|\|.*|Wojciech Żywny|{{DEFAULTSORT:Classical Pianists}}|Category:Lists of musicians by instrument|Category:Classical pianists|Category:Classical music lists|\(.*/, 'g'), '');
+    return rawStringContent.replace(new RegExp(regexForPianistsPage, 'g'), '');
   }
 
   function makePianistsArrayAndSort(parsedStringContent) {
-    var arrayOfPianists = parsedStringContent.split('*');
+    let arrayOfPianists = parsedStringContent.split('*');
     arrayOfPianists.sort();
 
     // remove first 2 indexes (↵) because regex did not catch them--look into it-- and the last index, the intro text for the page, which becomes the last index after sorting
@@ -46,19 +46,19 @@ $(document).ready(function(){
     return arrayOfPianists;
   }
 
+  // query api for that pianist page
   function callPianistAPI(pianistNameForQuery) {
-    // query api for that pianist page
     $.ajax({
       type: "GET",
       url: "http://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="+pianistNameForQuery+"&callback=?",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
-      success: function (data, textStatus, jqXHR) {
-        var pages = data.query.pages;
-        var pianistText,
+      success: (data, textStatus, jqXHR) => {
+        let pages = data.query.pages;
+        let pianistText,
             pianistName;
 
-        $.each(pages, function(index, data) {
+        $.each(pages, (index, data) => {
           pianistText = data.extract;
           pianistName = data.title;
         });
@@ -66,47 +66,42 @@ $(document).ready(function(){
         $('.pianist-text').text(pianistText);
         $('.pianist-name').text(pianistName);
       },
-      error: function (errorMessage) {
-        console.warn('Error accesing wikipedia API');
-      }
+      error: (errorMessage) => console.warn('Error accesing wikipedia API')
     });
   }
 
-  function callPianistsAPI() {
-    // query api for pianists list
+  // query api for pianists list
+  function callPianistsListApi() {
     $.ajax({
       type: "GET",
       url: "http://en.wikipedia.org/w/api.php?format=json&action=query&titles=List_of_classical_pianists&prop=revisions&rvprop=content&callback=?",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
-      success: function (data, textStatus, jqXHR) {
-        var rawStringContent = data.query.pages['2377133'].revisions[0]['*'];
-        var parsedStringContent = parseRawWikipediaContent(rawStringContent);          
+      success: (data, textStatus, jqXHR) => {
+        let rawStringContent = data.query.pages['2377133'].revisions[0]['*'];
+        let parsedStringContent = parseRawWikipediaContent(rawStringContent);          
         pianistsArray = makePianistsArrayAndSort(parsedStringContent);
-        renderPianistsOnScreen(pianistsArray);
+        renderPianists(pianistsArray);
       },
-      error: function (errorMessage) {
-        console.warn('Error accesing wikipedia API');
-      }
+      error: (errorMessage) => console.warn('Error accesing wikipedia API')
     });
   }
 
-  function renderPianistsOnScreen(pianistsArray) {
-    var pianists = '';
+  function renderPianists(pianistsArray) {
+    let pianists = '';
 
-    $.each(pianistsArray, function(index, pianist) {
-      var red = getRandomInt(80, 200);
-      var green = getRandomInt(80, 200);
-      var blue = getRandomInt(80, 200);
-      var background = 'rgb('+ red + ',' + green + ',' + blue + ')';
+    $.each(pianistsArray, (index, pianist) => {
+      let red = getRandomInt(80, 200);
+      let green = getRandomInt(80, 200);
+      let blue = getRandomInt(80, 200);
+      let background = 'rgb('+ red + ',' + green + ',' + blue + ')';
       pianists += '<span class="pianist_container" style="background:' + background + '">' + pianist + '</span>';
     });
     
     $('.pianists-wrapper').html(pianists);
 
     // add listener
-    $('.pianist_container').on('click', function() {
-      formatPianistNameAndCallApi($(this));
-    });
+    // when using '=>' $(this) is bound to window, not to element that has the event
+    $('.pianist_container').on('click', () => formatPianistNameAndCallApi($($(event.currentTarget))));
   }
 });
