@@ -10,7 +10,7 @@ header {
 header::after {
   height: 60%;
   content: "";
-  background: no-repeat center/100% url("../img/pianist.jpg");
+  background: no-repeat center/cover url("../img/pianist.jpg");
   opacity: 0.5;
   top: 0;
   left: 0;
@@ -68,4 +68,20 @@ input{
 .feedback_message{
   text-align: center;
   text-transform: uppercase;
+}
+
+@media only screen and (max-width: 1052px) {
+  .pianist_container{
+    width: 33.3%;
+  }
+}
+@media only screen and (max-width: 900px) {
+  .pianist_container{
+    width: 50%;
+  }
+}
+@media only screen and (max-width: 670px) {
+  .pianist_container{
+    width: 100%;
+  }
 }
