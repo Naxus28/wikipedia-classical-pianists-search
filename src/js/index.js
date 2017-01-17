@@ -8,8 +8,9 @@ $(document).ready(() => {
   $('.search').on('keyup', (e) => {
     if (e.target.value.length) {
       let matchedPianists = _.filter(pianistsArray, (pianist) => {
-        let pianistToLower = pianist.toLowerCase();
-        if (pianistToLower.includes(e.target.value)) {
+        let pianistToLower = pianist.toLowerCase().trim();
+        let searchPattern = new RegExp('^' + e.target.value);
+        if (searchPattern.test(pianistToLower)) {
           return pianist;
         }
       });
@@ -19,6 +20,8 @@ $(document).ready(() => {
       // add listener
       // when using '=>' $(this) is bound to window, not to element that has the event
       $('.pianist_container').on('click', () => formatPianistNameAndCallApi(($(event.currentTarget))));
+    } else {
+      callPianistsListApi();
     }
   });
 
@@ -98,10 +101,14 @@ $(document).ready(() => {
       pianists += '<span class="pianist_container" style="background:' + background + '">' + pianist + '</span>';
     });
 
-    $('.pianists-wrapper').html(pianists);
+    let content = pianists ? pianists : '<span class="feedback_message">No matches</span>';
+
+    $('.pianists-wrapper').html(content);
 
     // add listener
     // when using '=>' $(this) is bound to window, not to element that has the event
     $('.pianist_container').on('click', () => formatPianistNameAndCallApi($($(event.currentTarget))));
   }
 });
+
+
