@@ -1,1 +1,1 @@
-# wikipedia-classical-pianists-search
+# This app performs searches of classical pianists' biographies via the Wikipedia API.
