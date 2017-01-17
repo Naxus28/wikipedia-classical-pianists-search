@@ -2,6 +2,13 @@ $(document).ready(() => {
   const regexForPianistsPage = /[[\]]|\u21b5|{{div col end}}|{{div col\|cols=3}}|:fr:Jean-Marc Savelli|Jean-Marc Savelli|==+[A-Z].*|==+[A-Z].*|\|.*|Wojciech Żywny|{{DEFAULTSORT:Classical Pianists}}|Category:Lists of musicians by instrument|Category:Classical pianists|Category:Classical music lists|\(.*/;
   callPianistsListApi();
 
+  // remove pianist div if user focus on input--means they will start a new search and old result should be removed
+  $('.search').on('focus', (e) => {
+    if (e.target.value.length) {
+      $('.pianist-wrapper').remove();
+    }
+  });
+
   // let to hold wikipedia content from API
   let pianistsArray = [];
 
@@ -66,10 +73,20 @@ $(document).ready(() => {
           pianistName = data.title;
         });
 
-        $('.pianist-text').text(pianistText);
-        $('.pianist-name').text(pianistName);
+        let nameForUrl = pianistName.replace(' ', '_');
+
+
+        let content = `<div class="pianist-wrapper">
+                        <h1 class="pianist-name">${pianistName}</h1>
+                        <p class="pianist-text">${pianistText}</p>
+                        <p>See more on <a target="_blank" href="https://en.wikipedia.org/wiki/${nameForUrl}">Wikipedia</a></p>
+                       </div>`;
+
+        $('.pianist-wrapper').remove();
+        $('header').after(content);
+
       },
-      error: (errorMessage) => console.warn('Error accesing wikipedia API')
+      error: (errorMessage) => console.warn('Error accesing wikipedia API: ', errorMessage)
     });
   }
 
@@ -97,8 +114,8 @@ $(document).ready(() => {
       let red = getRandomInt(80, 200);
       let green = getRandomInt(80, 200);
       let blue = getRandomInt(80, 200);
-      let background = 'rgb('+ red + ',' + green + ',' + blue + ')';
-      pianists += '<span class="pianist_container" style="background:' + background + '">' + pianist + '</span>';
+      let background = `rgb(${red}, ${green}, ${blue})`;
+      pianists += `<span class="pianist_container" style="background:${background}"> ${pianist}</span>`;
     });
 
     let content = pianists ? pianists : '<p class="feedback_message">No matches found for this search.</p>';

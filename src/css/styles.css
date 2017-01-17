@@ -1,9 +1,32 @@
+html, body, .wrapper{
+  height: 100%;
+}
+body {
+  margin: 0px;
+}
+header {
+ height: 60%;
+}
+header::after {
+  height: 60%;
+  content: "";
+  background: no-repeat center/100% url("../img/pianist.jpg");
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}
 .header {
   text-align: center;
 }
 h1.header {
   padding: 20px;
-  margin-top: 30px;
+  padding-top: 50px;
+  margin-top: 0px;
+  margin-bottom: 150px;
   text-transform: uppercase;
 }
 h2.header{
