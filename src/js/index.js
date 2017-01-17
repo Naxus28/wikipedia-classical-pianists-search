@@ -9,7 +9,7 @@ $(document).ready(() => {
     if (e.target.value.length) {
       let matchedPianists = _.filter(pianistsArray, (pianist) => {
         let pianistToLower = pianist.toLowerCase().trim();
-        let searchPattern = new RegExp('^' + e.target.value);
+        let searchPattern = new RegExp('^' + e.target.value + '| ' + e.target.value); // matches beginning of string or string after space
         if (searchPattern.test(pianistToLower)) {
           return pianist;
         }
@@ -101,7 +101,7 @@ $(document).ready(() => {
       pianists += '<span class="pianist_container" style="background:' + background + '">' + pianist + '</span>';
     });
 
-    let content = pianists ? pianists : '<span class="feedback_message">No matches</span>';
+    let content = pianists ? pianists : '<p class="feedback_message">No matches found for this search.</p>';
 
     $('.pianists-wrapper').html(content);
 
