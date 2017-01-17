@@ -42,7 +42,7 @@ $(document).ready(() => {
     arrayOfPianists.sort();
 
     // remove first 2 indexes (↵) because regex did not catch them--look into it-- and the last index, the intro text for the page, which becomes the last index after sorting
-    arrayOfPianists = arrayOfPianists.slice(2, arrayOfPianists.length-1); 
+    arrayOfPianists = arrayOfPianists.slice(2, arrayOfPianists.length-1);
     return arrayOfPianists;
   }
 
@@ -50,7 +50,7 @@ $(document).ready(() => {
   function callPianistAPI(pianistNameForQuery) {
     $.ajax({
       type: "GET",
-      url: "http://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="+pianistNameForQuery+"&callback=?",
+      url: "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="+pianistNameForQuery+"&callback=?",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: (data, textStatus, jqXHR) => {
@@ -74,12 +74,12 @@ $(document).ready(() => {
   function callPianistsListApi() {
     $.ajax({
       type: "GET",
-      url: "http://en.wikipedia.org/w/api.php?format=json&action=query&titles=List_of_classical_pianists&prop=revisions&rvprop=content&callback=?",
+      url: "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=List_of_classical_pianists&prop=revisions&rvprop=content&callback=?",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: (data, textStatus, jqXHR) => {
         let rawStringContent = data.query.pages['2377133'].revisions[0]['*'];
-        let parsedStringContent = parseRawWikipediaContent(rawStringContent);          
+        let parsedStringContent = parseRawWikipediaContent(rawStringContent);
         pianistsArray = makePianistsArrayAndSort(parsedStringContent);
         renderPianists(pianistsArray);
       },
@@ -97,7 +97,7 @@ $(document).ready(() => {
       let background = 'rgb('+ red + ',' + green + ',' + blue + ')';
       pianists += '<span class="pianist_container" style="background:' + background + '">' + pianist + '</span>';
     });
-    
+
     $('.pianists-wrapper').html(pianists);
 
     // add listener
