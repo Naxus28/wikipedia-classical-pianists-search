@@ -1,4 +1,5 @@
 $(document).ready(() => {
+  // see pattern here: http://regexr.com/3er2s
   const regexForPianistsPage = /[[\]]|\u21b5|{{div col end}}|{{div col\|cols=3}}|:fr:Jean-Marc Savelli|Jean-Marc Savelli|==+[A-Z].*|==+[A-Z].*|\|.*|Wojciech Żywny|{{DEFAULTSORT:Classical Pianists}}|Category:Lists of musicians by instrument|Category:Classical pianists|Category:Classical music lists|\(.*/;
   callPianistsListApi();
 
@@ -22,10 +23,10 @@ $(document).ready(() => {
         }
       });
 
-      renderPianists(matchedPianists)
+      renderPianists(matchedPianists);
 
       // add listener
-      // when using '=>' $(this) is bound to window, not to element that has the event
+      // when using '=>' $(this) is bound to window, not to element that has the event--need to use $(event.currentTarget)
       $('.pianist_container').on('click', () => formatPianistNameAndCallApi(($(event.currentTarget))));
     } else {
       callPianistsListApi();
@@ -43,7 +44,6 @@ $(document).ready(() => {
   }
 
   function parseRawWikipediaContent(rawStringContent) {
-    // see pattern here: http://regexr.com/3er2s
     return rawStringContent.replace(new RegExp(regexForPianistsPage, 'g'), '');
   }
 
@@ -60,7 +60,7 @@ $(document).ready(() => {
   function callPianistAPI(pianistNameForQuery) {
     $.ajax({
       type: "GET",
-      url: "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="+pianistNameForQuery+"&callback=?",
+      url: "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" + pianistNameForQuery + "&callback=?",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: (data, textStatus, jqXHR) => {
@@ -74,8 +74,6 @@ $(document).ready(() => {
         });
 
         let nameForUrl = pianistName.replace(' ', '_');
-
-
         let content = `<div class="pianist-wrapper">
                         <h1 class="pianist-name">${pianistName}</h1>
                         <p class="pianist-text">${pianistText}</p>
@@ -115,7 +113,7 @@ $(document).ready(() => {
       let green = getRandomInt(80, 200);
       let blue = getRandomInt(80, 200);
       let background = `rgb(${red}, ${green}, ${blue})`;
-      pianists += `<span class="pianist_container" style="background:${background}"> ${pianist}</span>`;
+      pianists += `<span class="pianist_container" style="background:${background}">${pianist}</span>`;
     });
 
     let content = pianists ? pianists : '<p class="feedback_message">No matches found for this search.</p>';
